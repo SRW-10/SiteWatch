@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Settings - SiteWatch{% endblock %}
+{% block content %}
+<h2>Monitoring Settings</h2>
+<div class="form-card">
+    <p><strong>Monitoring intervals:</strong> 30 or 60 seconds, selected when adding a website.</p>
+    <form method="post">
+        <label for="timeout">Request timeout</label>
+        <select id="timeout" name="timeout">
+            <option value="3" {% if timeout == 3 %}selected{% endif %}>3 seconds</option>
+            <option value="5" {% if timeout == 5 %}selected{% endif %}>5 seconds</option>
+            <option value="10" {% if timeout == 10 %}selected{% endif %}>10 seconds</option>
+        </select>
+        <button class="button" type="submit">Save Timeout</button>
+    </form>
+</div>
+<p class="note">The timeout setting lasts until the Flask application restarts. Redirects are not followed; a received 301 or other redirect status is recorded directly. This avoids sending a request to an unvalidated redirect destination.</p>
+{% endblock %}

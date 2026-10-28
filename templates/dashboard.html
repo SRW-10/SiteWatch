@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - SiteWatch{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="summary-grid">
+    <div class="summary-card"><span>Total websites</span><strong>{{ summaries[0] }}</strong></div>
+    <div class="summary-card"><span>Websites online</span><strong class="green">{{ summaries[1] }}</strong></div>
+    <div class="summary-card"><span>Down or failing</span><strong class="red">{{ summaries[2] }}</strong></div>
+    <div class="summary-card"><span>Average response time</span><strong>{{ summaries[3] }} ms</strong></div>
+</div>
+
+<h3>Monitored Websites</h3>
+{% if records %}
+<div class="table-wrap">
+<table>
+    <thead><tr><th>Website URL</th><th>Status code</th><th>Response time</th><th>Current status</th><th>Last checked</th><th>Action</th></tr></thead>
+    <tbody>
+    {% for row in records %}
+    <tr>
+        <td><a href="{{ row.url }}" target="_blank" rel="noopener">{{ row.url }}</a></td>
+        <td>{{ row.status_code if row.status_code is not none else '-' }}</td>
+        <td>{{ row.response_time if row.response_time is not none else '-' }}{% if row.response_time is not none %} ms{% endif %}</td>
+        <td>{% if row.result %}<span class="badge {{ 'online' if row.result == 'Online' else 'failed' }}">{{ row.result }}</span>{% else %}<span class="badge">Not checked</span>{% endif %}</td>
+        <td>{{ row.checked_at if row.checked_at else '-' }}</td>
+        <td class="actions">
+            <form method="post" action="{{ url_for('check_now', website_id=row.id) }}"><button class="button" type="submit">Check Now</button></form>
+            <form method="post" action="{{ url_for('remove_website', website_id=row.id) }}" onsubmit="return confirm('Remove this website?');"><button class="button danger" type="submit">Remove</button></form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No websites have been added yet. Use the Add Website page to begin monitoring.</p>
+{% endif %}
+{% endblock %}

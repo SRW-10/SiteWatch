@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Monitoring History - SiteWatch{% endblock %}
+{% block content %}
+<h2>Monitoring History</h2>
+<form class="filter-form" method="get">
+    <label for="website_id">Filter by website</label>
+    <select id="website_id" name="website_id">
+        <option value="">All websites</option>
+        {% for website in websites %}
+        <option value="{{ website.id }}" {% if selected == website.id|string %}selected{% endif %}>{{ website.url }}</option>
+        {% endfor %}
+    </select>
+    <button class="button" type="submit">Filter</button>
+</form>
+
+{% if records %}
+<div class="table-wrap">
+<table>
+    <thead><tr><th>Date and time</th><th>Website URL</th><th>Status code</th><th>Response time</th><th>Result</th><th>Error details</th></tr></thead>
+    <tbody>
+    {% for row in records %}
+    <tr>
+        <td>{{ row.checked_at }}</td><td>{{ row.url }}</td>
+        <td>{{ row.status_code if row.status_code is not none else '-' }}</td>
+        <td>{{ row.response_time }} ms</td>
+        <td><span class="badge {{ 'online' if row.result == 'Online' else 'failed' }}">{{ row.result }}</span></td>
+        <td>{{ row.error_message if row.error_message else '-' }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<form method="post" action="{{ url_for('clear_history') }}" onsubmit="return confirm('Clear all saved monitoring history?');">
+    <button class="button danger" type="submit">Clear History</button>
+</form>
+{% else %}
+<p class="empty">No monitoring history is available.</p>
+{% endif %}
+{% endblock %}
